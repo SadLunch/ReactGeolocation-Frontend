@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import io from 'socket.io-client';
 
-const socket = io.connect('http://localhost:5000'); // Replace with your backend URL
+const socket = io.connect('wss://reactgeolocation-backend.onrender.com'); // Replace with your backend URL
 
 const MapPage = () => {
   const [position, setPosition] = useState([51.505, -0.09]);
