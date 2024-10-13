@@ -10,12 +10,23 @@ const MapPage = () => {
   useEffect(() => {
     // Request user location and update on the map
     if (navigator.geolocation) {
+      let uuid;
+      if (localStorage.getItem('uuid')) {
+        uuid = JSON.parse(localStorage.getItem('uuid'))
+      } else {
+        const { v4: uuidv4 } = require('uuid');
+
+        // Generate a random UUID
+        uuid = uuidv4();
+        const inJSON = JSON.stringify(uuid) 
+        localStorage.setItem('uuid', inJSON) 
+      }
       navigator.geolocation.watchPosition((pos) => {
         const { latitude, longitude } = pos.coords;
         setPosition([latitude, longitude]);
 
         // Emit user's position to the backend via WebSocket
-        socket.emit('send-location', { lat: latitude, lng: longitude });
+        socket.emit('send-location', { lat: latitude, lng: longitude }, uuid);
       });
     }
     
