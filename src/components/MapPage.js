@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import io from 'socket.io-client';
-import FeedbackForm from 'FeedbackForm';
+import FeedbackForm from '../components/FeedbackForm';
 
 const socket = io.connect('https://reactgeolocation-backend.onrender.com'); // Replace with your backend URL
 
