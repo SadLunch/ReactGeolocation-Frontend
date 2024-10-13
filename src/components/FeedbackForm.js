@@ -5,8 +5,17 @@ const FeedbackForm = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // You don't need a special submit action, Netlify handles the form submission.
-    alert(`Feedback submitted: ${feedback}`);
+  
+    const myForm = event.target;
+    const formData = new FormData(myForm);
+    
+    fetch("/", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams(formData).toString(),
+    })
+      .then(() => alert(`Form successfully submitted: ${feedback}`))
+      .catch((error) => alert(error));
   };
 
   return (
