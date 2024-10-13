@@ -6,7 +6,7 @@ const FeedbackForm = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     // You don't need a special submit action, Netlify handles the form submission.
-    alert('Feedback submitted!');
+    alert(`Feedback submitted: ${feedback}`);
   };
 
   return (
