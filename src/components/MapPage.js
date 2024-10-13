@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import io from 'socket.io-client';
 
-const socket = io.connect('wss://reactgeolocation-backend.onrender.com'); // Replace with your backend URL
+const socket = io.connect('https://reactgeolocation-backend.onrender.com'); // Replace with your backend URL
 
 const MapPage = () => {
   const [position, setPosition] = useState([51.505, -0.09]);
@@ -30,9 +30,7 @@ const MapPage = () => {
     <div>
       <h1>Map Page</h1>
       <MapContainer center={position} zoom={13} style={{ height: '400px', width: '100%' }}>
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <Marker position={position}></Marker>
       </MapContainer>
     </div>
