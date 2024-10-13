@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import io from 'socket.io-client';
+import FeedbackForm from 'FeedbackForm';
 
 const socket = io.connect('https://reactgeolocation-backend.onrender.com'); // Replace with your backend URL
 
@@ -44,6 +45,7 @@ const MapPage = () => {
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <Marker position={position}></Marker>
       </MapContainer>
+      <FeedbackForm />
     </div>
   );
 };
