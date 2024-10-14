@@ -1,12 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMapEvents, Popup } from 'react-leaflet';
 import io from 'socket.io-client';
 import FeedbackForm from '../components/FeedbackForm';
 
 const socket = io.connect('https://reactgeolocation-backend.onrender.com'); // Replace with your backend URL
 
 const MapPage = () => {
-  const [position, setPosition] = useState([51.505, -0.09]);
+  const [position, setPosition] = useState([38.710, -9.142])
+  function LocationMarker() {
+    const map = useMapEvents({
+      click() {
+        map.locate()
+      },
+      locationfound(e) {
+        setPosition(e.latlng)
+        map.flyTo(e.latlng, map.getZoom())
+      },
+    })
+  
+    return position === null ? null : (
+      <Marker position={position}>
+        <Popup>You are here</Popup>
+      </Marker>
+    )
+  }
 
   useEffect(() => {
     // Request user location and update on the map
@@ -27,7 +44,7 @@ const MapPage = () => {
         setPosition([latitude, longitude]);
 
         // Emit user's position to the backend via WebSocket
-        socket.emit('send-location', { lat: latitude, lng: longitude }, { lat: 51.505, lng: -0.09 }, uuid);
+        socket.emit('send-location', { lat: latitude, lng: longitude }, { lat: 38.710, lng: -9.142 }, uuid);
       });
     }
     
@@ -45,7 +62,7 @@ const MapPage = () => {
       <h1>Map Page</h1>
       <MapContainer center={position} zoom={13} style={{ height: '400px', width: '100%' }}>
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <Marker position={position}></Marker>
+        <LocationMarker />
       </MapContainer>
       <FeedbackForm />
     </div>
