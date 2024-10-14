@@ -6,7 +6,7 @@ import FeedbackForm from '../components/FeedbackForm';
 const socket = io.connect('https://reactgeolocation-backend.onrender.com'); // Replace with your backend URL
 
 const MapPage = () => {
-  const [position, setPosition] = useState('');
+  const [position, setPosition] = useState([51.505, -0.09]);
 
   useEffect(() => {
     // Request user location and update on the map
