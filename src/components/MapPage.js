@@ -6,7 +6,7 @@ import FeedbackForm from '../components/FeedbackForm';
 const socket = io.connect('https://reactgeolocation-backend.onrender.com'); // Replace with your backend URL
 
 const MapPage = () => {
-  const [position, setPosition] = useState([51.505, -0.09]);
+  const [position, setPosition] = useState('');
 
   useEffect(() => {
     // Request user location and update on the map
@@ -32,8 +32,10 @@ const MapPage = () => {
     }
     
     // Listen for updates of other users' locations
-    socket.on('user-location', (data) => {
-      console.log("Other user's location: ", data);
+    socket.on('user-location', (data, user) => {
+      if (user !== localStorage.getItem('uuid')) {
+        console.log("Other user's location: ", data);
+      }
       // Handle other users' locations (e.g., update markers)
     });
   }, []);
