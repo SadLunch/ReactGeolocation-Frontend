@@ -17,7 +17,8 @@ const DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon;
 
 const MapPage = () => {
-  const [position, setPosition] = useState([38.710, -9.142])
+  const [position, setPosition] = useState([38.710, -9.142]);
+
   function LocationMarker() {
     const map = useMapEvents({
       click() {
@@ -34,6 +35,12 @@ const MapPage = () => {
         <Popup>You are here</Popup>
       </Marker>
     )
+  }
+
+  function OtherMarkers(coords) {
+    return <Marker position={coords}>
+      <Popup>Other person here</Popup>
+    </Marker>
   }
 
   useEffect(() => {
@@ -62,7 +69,8 @@ const MapPage = () => {
     // Listen for updates of other users' locations
     socket.on('user-location', (data, user) => {
       if (user !== localStorage.getItem('uuid')) {
-        console.log("Other user's location: ", data);
+        console.log(`${user}'s location: ${data}`);
+        document.getElementById('map').appendChild(<OtherMarkers coords={data} />);
       }
       // Handle other users' locations (e.g., update markers)
     });
@@ -71,7 +79,7 @@ const MapPage = () => {
   return (
     <div>
       <h1>Map Page</h1>
-      <MapContainer center={position} zoom={13} style={{ height: '400px', width: '100%' }}>
+      <MapContainer id='map' center={position} zoom={13} style={{ height: '400px', width: '100%' }}>
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <LocationMarker />
       </MapContainer>
