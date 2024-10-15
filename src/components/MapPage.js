@@ -1,9 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents, Popup } from 'react-leaflet';
+import L from 'leaflet';
 import io from 'socket.io-client';
 import FeedbackForm from '../components/FeedbackForm';
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
 const socket = io.connect('https://reactgeolocation-backend.onrender.com'); // Replace with your backend URL
+
+// Set up the default icon for markers
+const DefaultIcon = L.icon({
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
 
 const MapPage = () => {
   const [position, setPosition] = useState([38.710, -9.142])
