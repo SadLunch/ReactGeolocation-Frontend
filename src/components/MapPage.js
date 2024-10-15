@@ -101,7 +101,7 @@ const MapPage = () => {
 
         {/* Markers for other users' locations */}
         {usersLocations.map((userLoc) => (
-          <Marker key={userLoc.user} position={[userLoc.location.lat, userLoc.location.lng]}>
+          <Marker key={userLoc.user} position={userLoc.location}>
             <Popup>{userLoc.user}'s location</Popup>
           </Marker>
         ))}
