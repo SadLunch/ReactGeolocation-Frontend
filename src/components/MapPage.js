@@ -84,10 +84,10 @@ const MapPage = () => {
       }
     });
 
-    // Cleanup WebSocket connection on component unmount
-    return () => {
-      socket.off('user-location');
-    };
+    // // Cleanup WebSocket connection on component unmount
+    // return () => {
+    //   socket.off('user-location');
+    // };
   }, []);
 
   return (
