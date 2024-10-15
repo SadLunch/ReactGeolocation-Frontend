@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import io from 'socket.io-client';
+
+const socket = io.connect('https://reactgeolocation-backend.onrender.com'); // Replace with your backend URL
 
 const FeedbackForm = () => {
   const [feedback, setFeedback] = useState('');
@@ -6,13 +9,7 @@ const FeedbackForm = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     
-    fetch("/", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams(feedback),
-    })
-      .then(() => alert(`Form successfully submitted: ${feedback}`))
-      .catch((error) => alert(error));
+    socket.emit('feedback', feedback);
   };
 
   return (
