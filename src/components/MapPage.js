@@ -71,6 +71,7 @@ const MapPage = () => {
 
     socket.on('exp-location', (experiences) => {
       setExperienceLocations(experiences);
+      console.log(experienceLocations);
     });
 
     // Listen for other users' location updates
