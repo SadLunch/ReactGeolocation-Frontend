@@ -144,7 +144,7 @@ const MapPage = () => {
           );
         })}
       </MapContainer>
-      <FeedbackForm />
+      {/* <FeedbackForm /> */}
     </div>
   );
 };
