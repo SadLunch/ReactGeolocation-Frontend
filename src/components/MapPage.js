@@ -99,7 +99,7 @@ const MapPage = () => {
     // return () => {
     //   socket.off('user-location');
     // };
-  }, []);
+  }, [experienceLocations]);
 
   const navigate = useNavigate();
 
