@@ -45,6 +45,10 @@ const MapPage = () => {
   }
 
   useEffect(() => {
+    socket.on('exp-location', (experiences) => {
+      setExperienceLocations(experiences);
+      console.log(experienceLocations);
+    });
     // Request user location and update on the map
     if (navigator.geolocation) {
       let uuid;
@@ -69,10 +73,7 @@ const MapPage = () => {
       });
     }
 
-    socket.on('exp-location', (experiences) => {
-      setExperienceLocations(experiences);
-      console.log(experienceLocations);
-    });
+    
 
     // Listen for other users' location updates
     // socket.on('user-location', (data, expName, nUsersNear) => {
