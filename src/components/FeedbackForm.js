@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import io from 'socket.io-client';
+//import io from 'socket.io-client';
 
-const socket = io.connect('https://reactgeolocation-backend.onrender.com'); // Replace with your backend URL
+//const socket = io.connect('https://reactgeolocation-backend.onrender.com'); // Replace with your backend URL
 
 const FeedbackForm = () => {
   const [feedback, setFeedback] = useState('');
@@ -10,8 +10,8 @@ const FeedbackForm = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    socket.emit('feedback', feedback);
+    console.log(feedback)
+    //socket.emit('feedback', feedback);
     setSubmitted(true);
   };
 
