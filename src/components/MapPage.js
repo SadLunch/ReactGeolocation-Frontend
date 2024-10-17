@@ -9,9 +9,9 @@ import { useNavigate } from 'react-router-dom';
 
 const socket = io.connect('https://reactgeolocation-backend.onrender.com'); // Replace with your backend URL
 
-const hardcodedExperiences = [
-  { id: 1, location: { lat: 38.710, lng: -9.140 }, name: 'Test Experience', nUsersIn: 5 }
-];
+// const hardcodedExperiences = [
+//   { id: 1, location: { lat: 38.710, lng: -9.140 }, name: 'Test Experience', nUsersIn: 5 }
+// ];
 
 // Set up the default icon for markers
 const DefaultIcon = L.icon({
@@ -51,7 +51,7 @@ const MapPage = () => {
   useEffect(() => {
     socket.on('exp-location', (experiences) => {
       console.log("Received experiences:", experiences);
-      setExperienceLocations(hardcodedExperiences);
+      setExperienceLocations(experiences);
     });
   
     return () => {
@@ -119,7 +119,7 @@ const MapPage = () => {
   // Function to handle clicking on the popup text
   const handleClick = (text) => {
     // Navigate to the target page, passing the text as state
-    navigate('/display-text', { state: { clickedText: text } });
+    navigate('/experience', { state: { expName: text } });
   };
 
   return (
