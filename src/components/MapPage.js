@@ -5,6 +5,7 @@ import io from 'socket.io-client';
 import FeedbackForm from '../components/FeedbackForm';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import { useNavigate } from 'react-router-dom';
 
 const socket = io.connect('https://reactgeolocation-backend.onrender.com'); // Replace with your backend URL
 
@@ -18,11 +19,11 @@ L.Marker.prototype.options.icon = DefaultIcon;
 
 const MapPage = () => {
   const [position, setPosition] = useState([38.710, -9.142]); // User's position
-  const [usersLocations, setUsersLocations] = useState([]);   // Other users' locations
+  const [experienceLocations, setExperienceLocations] = useState([]);   // Other users' locations
 
   function LocationMarker() {
     const map = useMapEvents({
-      click() {
+      load() {
         map.locate();
       },
       locationfound(e) {
@@ -33,7 +34,12 @@ const MapPage = () => {
 
     return position === null ? null : (
       <Marker position={position}>
-        <Popup>You are here</Popup>
+        <Popup>
+          <div>
+            <img src='../images/peacock.png' alt='peacock'></img>
+            <span></span>
+          </div>
+          </Popup>
       </Marker>
     );
   }
@@ -59,36 +65,48 @@ const MapPage = () => {
         setPosition([latitude, longitude]);
 
         // Emit user's position to the backend via WebSocket
-        socket.emit('send-location', { lat: latitude, lng: longitude }, { lat: 38.710, lng: -9.142 }, uuid);
+        socket.emit('send-location', { lat: latitude, lng: longitude }, uuid, localStorage.getItem('currentExperience') ? localStorage.getItem('currentExperience') : 0);
       });
     }
 
-    // Listen for other users' location updates
-    socket.on('user-location', (data, user) => {
-      if (user !== localStorage.getItem('uuid')) {
-        console.log(`${user}'s location: `, data);
-
-        // Update the state with the new location data for the other users
-        setUsersLocations((prevLocations) => {
-          // Check if the user already exists in the list
-          const userExists = prevLocations.find(loc => loc.user === user);
-
-          if (userExists) {
-            // Update the existing user's location
-            return prevLocations.map(loc => loc.user === user ? { user, location: data } : loc);
-          } else {
-            // Add new user and their location
-            return [...prevLocations, { user, location: data }];
-          }
-        });
-      }
+    socket.on('exp-location', (experiences) => {
+      setExperienceLocations(experiences);
     });
+
+    // Listen for other users' location updates
+    // socket.on('user-location', (data, expName, nUsersNear) => {
+    //   if (user !== localStorage.getItem('uuid')) {
+    //     console.log(`${user}'s location: `, data);
+
+    //     // Update the state with the new location data for the other users
+    //     setUsersLocations((prevLocations) => {
+    //       // Check if the user already exists in the list
+    //       const userExists = prevLocations.find(loc => loc.user === user);
+
+    //       if (userExists) {
+    //         // Update the existing user's location
+    //         return prevLocations.map(loc => loc.user === user ? { user, location: data } : loc);
+    //       } else {
+    //         // Add new user and their location
+    //         return [...prevLocations, { user, location: data }];
+    //       }
+    //     });
+    //   }
+    // });
 
     // // Cleanup WebSocket connection on component unmount
     // return () => {
     //   socket.off('user-location');
     // };
   }, []);
+
+  const navigate = useNavigate();
+
+  // Function to handle clicking on the popup text
+  const handleClick = (text) => {
+    // Navigate to the target page, passing the text as state
+    navigate('/display-text', { state: { clickedText: text } });
+  };
 
   return (
     <div>
@@ -100,9 +118,9 @@ const MapPage = () => {
         <LocationMarker />
 
         {/* Markers for other users' locations */}
-        {usersLocations.map((userLoc) => (
-          <Marker key={userLoc.user} position={userLoc.location}>
-            <Popup>{userLoc.user}'s location</Popup>
+        {experienceLocations.map((expLoc) => (
+          <Marker key={expLoc.name} position={expLoc.location}>
+            <Popup><span onClick={() => handleClick(expLoc.name)} style={{ cursor: 'pointer'}}>{expLoc.name}</span> <br /> {expLoc.nUsersIn} people here!</Popup>
           </Marker>
         ))}
       </MapContainer>
