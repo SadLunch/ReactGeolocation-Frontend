@@ -19,7 +19,7 @@ L.Marker.prototype.options.icon = DefaultIcon;
 
 const MapPage = () => {
   const [position, setPosition] = useState([38.710, -9.142]); // User's position
-  const [experienceLocations, setExperienceLocations] = useState([]);   // Other users' locations
+  let [experienceLocations, setExperienceLocations] = useState([]);   // Other users' locations
 
   function LocationMarker() {
     const map = useMapEvents({
@@ -44,11 +44,14 @@ const MapPage = () => {
     );
   }
 
-  useEffect(() => {
-    socket.on('exp-location', (experiences) => {
-      setExperienceLocations(experiences);
-      console.log(experienceLocations);
+  socket.on('exp-location', (experiences) => {
+    setExperienceLocations((experiences) => {
+      return experiences;
     });
+    console.log(experienceLocations);
+  });
+
+  useEffect(() => {
     // Request user location and update on the map
     if (navigator.geolocation) {
       let uuid;
