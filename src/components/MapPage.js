@@ -44,13 +44,6 @@ const MapPage = () => {
     );
   }
 
-  socket.on('exp-location', (experiences) => {
-    setExperienceLocations((experiences) => {
-      return experiences;
-    });
-    console.log(experienceLocations);
-  });
-
   useEffect(() => {
     // Request user location and update on the map
     if (navigator.geolocation) {
@@ -103,7 +96,17 @@ const MapPage = () => {
     // return () => {
     //   socket.off('user-location');
     // };
-  }, [experienceLocations]);
+   // Handle socket event for experience locations
+   socket.on('exp-location', (experiences) => {
+    setExperienceLocations(experiences);  // Update state with received locations
+    console.log("Updated experience locations:", experiences);
+  });
+
+  // Cleanup function
+  return () => {
+    socket.off('exp-location');
+  };
+}, []);
 
   const navigate = useNavigate();
 
