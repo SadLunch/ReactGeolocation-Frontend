@@ -86,7 +86,7 @@ const MapPage = () => {
       setExperienceLocations((prevExp) => {
         const expExists = prevExp.find(e => e.id === idExp);
         if (expExists) {
-          return prevExp.map(e => e.id === idExp ? exp : e);
+          return prevExp.push(exp);
         } else {
           return [...prevExp, exp]
         }
