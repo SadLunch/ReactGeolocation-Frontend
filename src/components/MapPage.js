@@ -82,18 +82,9 @@ const MapPage = () => {
     }
 
     
-    socket.on('locations', (exp, idExp, test) => {
-      if (test) {
-        console.log('Chegou aqui');
-      }
-      setExperienceLocations((prevExp) => {
-        const expExists = prevExp.find(e => e.id === idExp);
-        if (expExists) {
-          return prevExp.push(exp);
-        } else {
-          return [...prevExp, exp]
-        }
-      });
+    socket.on('locations', (exps) => {
+      console.log('test');
+      setExperienceLocations(exps);
     });
     // Listen for other users' location updates
     // socket.on('user-location', (data, expName, nUsersNear) => {
