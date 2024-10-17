@@ -27,7 +27,7 @@ const MapPage = () => {
 
   function LocationMarker() {
     const map = useMapEvents({
-      load() {
+      click() {
         map.locate();
       },
       locationfound(e) {
@@ -82,7 +82,10 @@ const MapPage = () => {
     }
 
     
-    socket.on('locations', (exp, idExp) => {
+    socket.on('locations', (exp, idExp, test) => {
+      if (test) {
+        console.log('Chegou aqui');
+      }
       setExperienceLocations((prevExp) => {
         const expExists = prevExp.find(e => e.id === idExp);
         if (expExists) {
