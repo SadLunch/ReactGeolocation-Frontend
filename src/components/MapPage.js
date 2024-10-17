@@ -87,7 +87,8 @@ const MapPage = () => {
         setPosition([latitude, longitude]);
 
         // Emit user's position to the backend via WebSocket
-        emitLocation(latitude, longitude , uuid, localStorage.getItem('currentExperience') || 0);
+        // emitLocation(latitude, longitude , uuid, localStorage.getItem('currentExperience') || 0);
+        socket.emit('send-location', { lat: latitude, lng: longitude }, uuid, localStorage.getItem('currentExperience') || 0);
       }, null, {enableHighAccuracy: true});
     }
 
