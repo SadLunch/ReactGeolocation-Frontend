@@ -49,11 +49,11 @@ const MapPage = () => {
   }
 
   useEffect(() => {
-    socket.on('exp-location', (experiences) => {
+    socket.on('exp-location', experiences => {
       console.log("Received experiences:", experiences);
       setExperienceLocations(experiences);
     });
-  }, [experienceLocations]);
+  }, []);
   
 
   useEffect(() => {
