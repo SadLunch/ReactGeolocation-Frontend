@@ -53,7 +53,7 @@ const MapPage = () => {
       console.log("Received experiences:", experiences);
       setExperienceLocations(experiences);
     });
-  }, []);
+  }, [experienceLocations]);
   
 
   useEffect(() => {
