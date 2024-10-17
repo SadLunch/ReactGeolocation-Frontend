@@ -53,10 +53,6 @@ const MapPage = () => {
       console.log("Received experiences:", experiences);
       setExperienceLocations(experiences);
     });
-  
-    return () => {
-      socket.off('exp-location');
-    };
   }, []);
   
 
