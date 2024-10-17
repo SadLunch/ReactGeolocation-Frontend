@@ -82,13 +82,18 @@ const MapPage = () => {
       }
 
       // Watch the user's geolocation and send it via the WebSocket
-      navigator.geolocation.watchPosition((pos) => {
+      const watcher = navigator.geolocation.watchPosition((pos) => {
         const { latitude, longitude } = pos.coords;
         setPosition([latitude, longitude]);
 
         // Emit user's position to the backend via WebSocket
         emitLocation(latitude, longitude , uuid, localStorage.getItem('currentExperience') || 0);
       }, null, {enableHighAccuracy: true});
+
+      // Cleanup geolocation watcher on component unmount
+      return () => {
+        navigator.geolocation.clearWatch(watcher);
+      };
     }
 
     // Listen for other users' location updates
