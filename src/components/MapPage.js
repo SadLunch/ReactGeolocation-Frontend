@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import io from 'socket.io-client';
+import { throttle } from 'lodash';
 //import FeedbackForm from '../components/FeedbackForm';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -25,6 +26,11 @@ const MapPage = () => {
   const [position, setPosition] = useState([38.710, -9.142]); // User's position
   let [experienceLocations, setExperienceLocations] = useState([]);   // Other users' locations
 
+  // Throttle the send-location function to reduce frequency of emissions (e.g., every 5 seconds)
+  const emitLocation = throttle((lat, lng, uuid, currentExperience) => {
+    socket.emit('send-location', { lat, lng }, uuid, currentExperience);
+  }, 5000); // 5000ms = 5 seconds
+  
   function LocationMarker() {
     const map = useMapEvents({
       click() {
@@ -48,12 +54,16 @@ const MapPage = () => {
     );
   }
 
-  // useEffect(() => {
-  //   socket.on('exp-location', experiences => {
-  //     console.log("Received experiences:", experiences);
-  //     setExperienceLocations(experiences);
-  //   });
-  // }, []);
+  useEffect(() => {
+    socket.on('locations', (experiences) => {
+      console.log("Received experiences:", experiences);
+      setExperienceLocations([...experiences]);  // Update the state with received experience locations
+    });
+
+    return () => {
+      socket.off('locations');
+    };
+  }, []);
   
 
   useEffect(() => {
@@ -77,15 +87,10 @@ const MapPage = () => {
         setPosition([latitude, longitude]);
 
         // Emit user's position to the backend via WebSocket
-        socket.emit('send-location', { lat: latitude, lng: longitude }, uuid, localStorage.getItem('currentExperience') ? localStorage.getItem('currentExperience') : 0);
-      });
+        emitLocation(latitude, longitude , uuid, localStorage.getItem('currentExperience') || 0);
+      }, null, {enableHighAccuracy: true});
     }
 
-    
-    socket.on('locations', (exps) => {
-      console.log('test');
-      setExperienceLocations(exps);
-    });
     // Listen for other users' location updates
     // socket.on('user-location', (data, expName, nUsersNear) => {
     //   if (user !== localStorage.getItem('uuid')) {
@@ -111,7 +116,7 @@ const MapPage = () => {
     // return () => {
     //   socket.off('user-location');
     // };
-  }, []);
+  }, [emitLocation]);
 
   const navigate = useNavigate();
 
