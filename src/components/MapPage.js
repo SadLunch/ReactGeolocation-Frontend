@@ -46,10 +46,17 @@ const MapPage = () => {
 
   useEffect(() => {
     socket.on('exp-location', (experiences) => {
-      
-      console.log("Updated experience locations:", experiences);
-      setExperienceLocations([...experiences]);  // Update state with received locations
+      console.log("Received experiences:", experiences);
+      setExperienceLocations([...experiences]);
     });
+  
+    return () => {
+      socket.off('exp-location');
+    };
+  }, []);
+  
+
+  useEffect(() => {
     // Request user location and update on the map
     if (navigator.geolocation) {
       let uuid;
@@ -72,10 +79,6 @@ const MapPage = () => {
         // Emit user's position to the backend via WebSocket
         socket.emit('send-location', { lat: latitude, lng: longitude }, uuid, localStorage.getItem('currentExperience') ? localStorage.getItem('currentExperience') : 0);
       });
-      // Cleanup function
-      return () => {
-        socket.off('exp-location');
-      };
     }
 
     
@@ -105,7 +108,7 @@ const MapPage = () => {
     // return () => {
     //   socket.off('user-location');
     // };
-}, []);
+  }, []);
 
   const navigate = useNavigate();
 
@@ -118,18 +121,25 @@ const MapPage = () => {
   return (
     <div>
       <h1>Map Page</h1>
-      <MapContainer id='map' center={position} zoom={13} style={{ height: '400px', width: '100%' }}>
+      <MapContainer id='map' center={position} zoom={13} style={{ height: '600px', width: '100%' }}>
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
         {/* Marker for user's current location */}
         <LocationMarker />
 
         {/* Markers for other users' locations */}
-        {experienceLocations.map((expLoc) => (
-          <Marker key={expLoc.name} position={expLoc.location}>
-            <Popup><span onClick={() => handleClick(expLoc.name)} style={{ cursor: 'pointer'}}>{expLoc.name}</span> <br /> {expLoc.nUsersIn} people here!</Popup>
-          </Marker>
-        ))}
+        {experienceLocations.map((expLoc) => {
+          const { lat, lng } = expLoc.location;
+          return (
+            <Marker key={expLoc.id} position={[lat, lng]}>
+              <Popup>
+                <span onClick={() => handleClick(expLoc.name)} style={{ cursor: 'pointer' }}>
+                  {expLoc.name}
+                </span> <br /> {expLoc.nUsersIn} people here!
+              </Popup>
+            </Marker>
+          );
+        })}
       </MapContainer>
       <FeedbackForm />
     </div>
