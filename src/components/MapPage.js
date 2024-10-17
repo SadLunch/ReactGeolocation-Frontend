@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import io from 'socket.io-client';
-import FeedbackForm from '../components/FeedbackForm';
+//import FeedbackForm from '../components/FeedbackForm';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import { useNavigate } from 'react-router-dom';
