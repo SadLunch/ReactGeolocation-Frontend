@@ -48,12 +48,12 @@ const MapPage = () => {
     );
   }
 
-  useEffect(() => {
-    socket.on('exp-location', experiences => {
-      console.log("Received experiences:", experiences);
-      setExperienceLocations(experiences);
-    });
-  }, []);
+  // useEffect(() => {
+  //   socket.on('exp-location', experiences => {
+  //     console.log("Received experiences:", experiences);
+  //     setExperienceLocations(experiences);
+  //   });
+  // }, []);
   
 
   useEffect(() => {
@@ -82,7 +82,16 @@ const MapPage = () => {
     }
 
     
-
+    socket.on('locations', (exp, idExp) => {
+      setExperienceLocations((prevExp) => {
+        const expExists = prevExp.find(e => e.id === idExp);
+        if (expExists) {
+          return prevExp.map(e => e.id === idExp ? exp : e);
+        } else {
+          return [...prevExp, exp]
+        }
+      });
+    });
     // Listen for other users' location updates
     // socket.on('user-location', (data, expName, nUsersNear) => {
     //   if (user !== localStorage.getItem('uuid')) {
