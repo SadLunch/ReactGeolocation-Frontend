@@ -24,7 +24,8 @@ L.Marker.prototype.options.icon = DefaultIcon;
 
 const MapPage = () => {
   const [position, setPosition] = useState([38.710, -9.142]); // User's position
-  let [experienceLocations, setExperienceLocations] = useState([]);   // Other users' locations
+  //let [experienceLocations, setExperienceLocations] = useState([]);   // Other users' locations
+  const [usersLocations, setUsersLocations] = useState([]);   // Other users' locations
 
   // Throttle the send-location function to reduce frequency of emissions (e.g., every 5 seconds)
   const emitLocation = throttle((lat, lng, uuid, currentExperience) => {
@@ -54,16 +55,16 @@ const MapPage = () => {
     );
   }
 
-  useEffect(() => {
-    socket.on('locations', (experiences) => {
-      console.log("Received experiences:", experiences);
-      setExperienceLocations([...experiences]);  // Update the state with received experience locations
-    });
+  // useEffect(() => {
+  //   socket.on('locations', (experiences) => {
+  //     console.log("Received experiences:", experiences);
+  //     setExperienceLocations([...experiences]);  // Update the state with received experience locations
+  //   });
 
-    return () => {
-      socket.off('locations');
-    };
-  }, []);
+  //   return () => {
+  //     socket.off('locations');
+  //   };
+  // }, []);
   
 
   useEffect(() => {
@@ -93,30 +94,30 @@ const MapPage = () => {
     }
 
     // Listen for other users' location updates
-    // socket.on('user-location', (data, expName, nUsersNear) => {
-    //   if (user !== localStorage.getItem('uuid')) {
-    //     console.log(`${user}'s location: `, data);
+    socket.on('user-location', (data, user) => {
+      if (user !== localStorage.getItem('uuid')) {
+        console.log(`${user}'s location: `, data);
 
-    //     // Update the state with the new location data for the other users
-    //     setUsersLocations((prevLocations) => {
-    //       // Check if the user already exists in the list
-    //       const userExists = prevLocations.find(loc => loc.user === user);
+        // Update the state with the new location data for the other users
+        setUsersLocations((prevLocations) => {
+          // Check if the user already exists in the list
+          const userExists = prevLocations.find(loc => loc.user === user);
 
-    //       if (userExists) {
-    //         // Update the existing user's location
-    //         return prevLocations.map(loc => loc.user === user ? { user, location: data } : loc);
-    //       } else {
-    //         // Add new user and their location
-    //         return [...prevLocations, { user, location: data }];
-    //       }
-    //     });
-    //   }
-    // });
+          if (userExists) {
+            // Update the existing user's location
+            return prevLocations.map(loc => loc.user === user ? { user, location: data } : loc);
+          } else {
+            // Add new user and their location
+            return [...prevLocations, { user, location: data }];
+          }
+        });
+      }
+    });
 
-    // // Cleanup WebSocket connection on component unmount
-    // return () => {
-    //   socket.off('user-location');
-    // };
+    // Cleanup WebSocket connection on component unmount
+    return () => {
+      socket.off('user-location');
+    };
   }, [emitLocation]);
 
   const navigate = useNavigate();
@@ -137,14 +138,15 @@ const MapPage = () => {
         <LocationMarker />
 
         {/* Markers for other users' locations */}
-        {experienceLocations.map((expLoc) => {
+        {usersLocations.map((expLoc) => {
           const { lat, lng } = expLoc.location;
           return (
-            <Marker key={expLoc.id} position={[lat, lng]}>
+            <Marker key={expLoc.user} position={[lat, lng]}>
               <Popup>
-                <span onClick={() => handleClick(expLoc.name)} style={{ cursor: 'pointer' }}>
-                  {expLoc.name}
-                </span> <br /> {expLoc.nUsersIn} people here!
+                <span onClick={() => handleClick(expLoc.user)} style={{ cursor: 'pointer' }}>
+                  {expLoc.user}
+                </span> 
+                {/* <br /> {expLoc.nUsersIn} people here! */}
               </Popup>
             </Marker>
           );
