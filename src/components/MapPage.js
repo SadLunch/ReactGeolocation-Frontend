@@ -19,9 +19,13 @@ L.Marker.prototype.options.icon = DefaultIcon;
 const MapPage = () => {
   const [position, setPosition] = useState([38.710, -9.142]); // User's position
   const [usersLocations, setUsersLocations] = useState([]);   // Other users' locations
+  const [experienceLocations, setExperienceLocations] = useState([]);   // Other users' locations
 
+  socket.emit('ask-location', 'please');
   socket.on('experiences', (exps) => {
-    console.log('experiences: ', exps);
+    //console.log('experiences: ', exps);
+    setExperienceLocations(exps);
+    console.log(experienceLocations);
   });
 
   function LocationMarker() {
