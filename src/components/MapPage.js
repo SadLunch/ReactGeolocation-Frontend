@@ -58,7 +58,7 @@ const MapPage = () => {
         const { latitude, longitude } = pos.coords;
         setPosition([latitude, longitude]);
 
-        console.log("user if before: ", uuid);
+        console.log("user id before: ", uuid);
 
         // Emit user's position to the backend via WebSocket
         socket.emit('send-location', { lat: latitude, lng: longitude }, { lat: 38.710, lng: -9.142 }, uuid);
