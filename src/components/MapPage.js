@@ -25,17 +25,16 @@ const MapPage = () => {
 
 
   // Throttle the send-location function to reduce frequency of emissions (e.g., every 5 seconds)
-  const emitLocation = throttle((lat, lng, uuid) => {
+  const emitLocation = throttle((uuid) => {
     navigator.geolocation.getCurrentPosition((pos) => {
       const { latitude, longitude } = pos.coords;
       setPosition([latitude, longitude]);
 
-      console.log("user id before: ", uuid);
+      //console.log("user id before: ", uuid);
 
       // Emit user's position to the backend via WebSocket
       socket.emit('send-location', { lat: latitude, lng: longitude }, uuid);
     });
-    socket.emit('send-location', { lat, lng }, uuid);
   }, 5000); // 5000ms = 5 seconds
   
   function LocationMarker() {
@@ -58,7 +57,7 @@ const MapPage = () => {
 
   useEffect(() => {
     socket.on('experiences', (exps) => {
-      //console.log('experiences: ', exps);
+      console.log('experiences: ', exps);
       setExperienceLocations(exps);
       console.log(experienceLocations);
     });
@@ -78,17 +77,8 @@ const MapPage = () => {
         const inJSON = JSON.stringify(uuid);
         localStorage.setItem('uuid', inJSON);
       }
-
-      // Watch the user's geolocation and send it via the WebSocket
-      navigator.geolocation.watchPosition((pos) => {
-        const { latitude, longitude } = pos.coords;
-        setPosition([latitude, longitude]);
-
-        console.log("user id before: ", uuid);
-
-        // Emit user's position to the backend via WebSocket
-        emitLocation(latitude, longitude, uuid);
-      });
+      // Emit user's position to the backend via WebSocket
+      emitLocation(uuid);
     }
 
     // Listen for other users' location updates
