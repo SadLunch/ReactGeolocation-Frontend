@@ -7,6 +7,7 @@ import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
 const socket = io.connect('https://reactgeolocation-backend.onrender.com'); // Replace with your backend URL
+socket.emit('ask-location', 'please');
 
 // Set up the default icon for markers
 const DefaultIcon = L.icon({
@@ -21,7 +22,7 @@ const MapPage = () => {
   const [usersLocations, setUsersLocations] = useState([]);   // Other users' locations
   const [experienceLocations, setExperienceLocations] = useState([]);   // Other users' locations
 
-  socket.emit('ask-location', 'please');
+  
   socket.on('experiences', (exps) => {
     //console.log('experiences: ', exps);
     setExperienceLocations(exps);
