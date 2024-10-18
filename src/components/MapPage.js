@@ -65,7 +65,7 @@ const MapPage = () => {
       });
     }
 
-    socket.on('experiences', (exps) => {
+    socket.on('message', (exps) => {
       console.log('experiences: ', exps);
     });
 
