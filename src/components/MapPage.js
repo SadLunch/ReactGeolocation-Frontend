@@ -8,6 +8,10 @@ import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
 const socket = io.connect('https://reactgeolocation-backend.onrender.com'); // Replace with your backend URL
 
+socket.on('experiences', (exps) => {
+  console.log('experiences: ', exps);
+});
+
 // Set up the default icon for markers
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -64,10 +68,6 @@ const MapPage = () => {
         socket.emit('send-location', { lat: latitude, lng: longitude }, { lat: 38.710, lng: -9.142 }, uuid);
       });
     }
-
-    socket.on('message', (exps) => {
-      console.log('experiences: ', exps);
-    });
 
     // Listen for other users' location updates
     socket.on('user-location', (data, user) => {
