@@ -66,9 +66,10 @@ const MapPage = () => {
     }
 
     // Listen for other users' location updates
-    socket.on('user-location', (data, user) => {
+    socket.on('user-location', (data, user, exps) => {
       if (user !== localStorage.getItem('uuid')) {
-        console.log(`${user}'s location: `, data);
+        //console.log(`${user}'s location: `, data);
+        console.log("experiences: ", exps);
 
         // Update the state with the new location data for the other users
         setUsersLocations((prevLocations) => {
