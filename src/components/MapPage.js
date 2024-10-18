@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import io from 'socket.io-client';
+import { throttle } from 'lodash';
 import FeedbackForm from '../components/FeedbackForm';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
@@ -22,6 +23,20 @@ const MapPage = () => {
   const [usersLocations, setUsersLocations] = useState([]);   // Other users' locations
   const [experienceLocations, setExperienceLocations] = useState([]);   // Other users' locations
 
+
+  // Throttle the send-location function to reduce frequency of emissions (e.g., every 5 seconds)
+  const emitLocation = throttle((lat, lng, uuid) => {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const { latitude, longitude } = pos.coords;
+      setPosition([latitude, longitude]);
+
+      console.log("user id before: ", uuid);
+
+      // Emit user's position to the backend via WebSocket
+      socket.emit('send-location', { lat: latitude, lng: longitude }, uuid);
+    });
+    socket.emit('send-location', { lat, lng }, uuid);
+  }, 5000); // 5000ms = 5 seconds
   
   socket.on('experiences', (exps) => {
     //console.log('experiences: ', exps);
@@ -70,7 +85,7 @@ const MapPage = () => {
         console.log("user id before: ", uuid);
 
         // Emit user's position to the backend via WebSocket
-        socket.emit('send-location', { lat: latitude, lng: longitude }, { lat: 38.710, lng: -9.142 }, uuid);
+        emitLocation(latitude, longitude, uuid);
       });
     }
 
@@ -99,7 +114,7 @@ const MapPage = () => {
     // return () => {
     //   socket.off('user-location');
     // };
-  }, []);
+  }, [emitLocation]);
 
   return (
     <div>
