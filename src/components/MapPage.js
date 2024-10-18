@@ -38,12 +38,6 @@ const MapPage = () => {
     socket.emit('send-location', { lat, lng }, uuid);
   }, 5000); // 5000ms = 5 seconds
   
-  socket.on('experiences', (exps) => {
-    //console.log('experiences: ', exps);
-    setExperienceLocations(exps);
-    console.log(experienceLocations);
-  });
-
   function LocationMarker() {
     const map = useMapEvents({
       click() {
@@ -61,6 +55,14 @@ const MapPage = () => {
       </Marker>
     );
   }
+
+  useEffect(() => {
+    socket.on('experiences', (exps) => {
+      //console.log('experiences: ', exps);
+      setExperienceLocations(exps);
+      console.log(experienceLocations);
+    });
+  }, [experienceLocations]);
 
   useEffect(() => {
     // Request user location and update on the map
