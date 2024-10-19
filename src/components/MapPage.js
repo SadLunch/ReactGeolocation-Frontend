@@ -20,8 +20,8 @@ L.Marker.prototype.options.icon = DefaultIcon;
 
 const MapPage = () => {
   const [position, setPosition] = useState([38.710, -9.142]); // User's position
-  const [usersLocations, setUsersLocations] = useState([]);   // Other users' locations
-  const [experienceLocations, setExperienceLocations] = useState([]);   // Other users' locations
+  //const [usersLocations, setUsersLocations] = useState([]);   // Other users' locations
+  const [experiences, setExperiences] = useState([]);   // Other users' locations
 
 
   // Throttle the send-location function to reduce frequency of emissions (e.g., every 5 seconds)
@@ -56,12 +56,17 @@ const MapPage = () => {
   }
 
   useEffect(() => {
-    socket.on('experiences', (exps) => {
-      console.log('experiences: ', exps);
-      setExperienceLocations(exps);
-      console.log(experienceLocations);
-    });
-  }, [experienceLocations]);
+    // Fetch the experiences data from the backend API
+    fetch('https://reactgeolocation-backend.onrender.com/api/experiences')
+      .then((response) => response.json())
+      .then((data) => {
+        setExperiences(data);  // Store the experiences in the state
+        console.log(experiences);
+      })
+      .catch((error) => {
+        console.error('Error fetching experiences:', error);
+      });
+  }, [experiences]);  // The empty array ensures this runs only once, when the component mounts
 
   useEffect(() => {
     // Request user location and update on the map
@@ -81,26 +86,26 @@ const MapPage = () => {
       emitLocation(uuid);
     }
 
-    // Listen for other users' location updates
-    socket.on('user-location', (data, user) => {
-      if (user !== localStorage.getItem('uuid')) {
-        //console.log(`${user}'s location: `, data);
+    // // Listen for other users' location updates
+    // socket.on('user-location', (data, user) => {
+    //   if (user !== localStorage.getItem('uuid')) {
+    //     //console.log(`${user}'s location: `, data);
 
-        // Update the state with the new location data for the other users
-        setUsersLocations((prevLocations) => {
-          // Check if the user already exists in the list
-          const userExists = prevLocations.find(loc => loc.user === user);
+    //     // Update the state with the new location data for the other users
+    //     setUsersLocations((prevLocations) => {
+    //       // Check if the user already exists in the list
+    //       const userExists = prevLocations.find(loc => loc.user === user);
 
-          if (userExists) {
-            // Update the existing user's location
-            return prevLocations.map(loc => loc.user === user ? { user, location: data } : loc);
-          } else {
-            // Add new user and their location
-            return [...prevLocations, { user, location: data }];
-          }
-        });
-      }
-    });
+    //       if (userExists) {
+    //         // Update the existing user's location
+    //         return prevLocations.map(loc => loc.user === user ? { user, location: data } : loc);
+    //       } else {
+    //         // Add new user and their location
+    //         return [...prevLocations, { user, location: data }];
+    //       }
+    //     });
+    //   }
+    // });
 
     // // Cleanup WebSocket connection on component unmount
     // return () => {
@@ -118,9 +123,9 @@ const MapPage = () => {
         <LocationMarker />
 
         {/* Markers for other users' locations */}
-        {usersLocations.map((userLoc) => (
-          <Marker key={userLoc.user} position={userLoc.location}>
-            <Popup>{userLoc.user}'s location</Popup>
+        {experiences.map((exp) => (
+          <Marker key={exp.name} position={exp.location}>
+            <Popup>{exp.name}'s location</Popup>
           </Marker>
         ))}
       </MapContainer>
