@@ -44,7 +44,6 @@ const MapPage = () => {
       .then((response) => response.json())
       .then((data) => {
         setExperiences(data);  // Store the experiences in the state
-        console.log(experiences);
       })
       .catch((error) => {
         console.error('Error fetching experiences:', error);
