@@ -7,8 +7,6 @@ import { throttle } from 'lodash';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
-const socket = io.connect('https://reactgeolocation-backend.onrender.com'); // Replace with your backend URL
-
 // Set up the default icon for markers
 const DefaultIcon = L.icon({
   iconUrl: icon,
@@ -21,20 +19,6 @@ const MapPage = () => {
   const [position, setPosition] = useState([38.710, -9.142]); // User's position
   //const [usersLocations, setUsersLocations] = useState([]);   // Other users' locations
   const [experiences, setExperiences] = useState([]);   // Other users' locations
-
-
-  // Throttle the send-location function to reduce frequency of emissions (e.g., every 5 seconds)
-  const emitLocation = throttle((uuid) => {
-    navigator.geolocation.getCurrentPosition((pos) => {
-      const { latitude, longitude } = pos.coords;
-      setPosition([latitude, longitude]);
-
-      //console.log("user id before: ", uuid);
-
-      // Emit user's position to the backend via WebSocket
-      socket.emit('send-location', { lat: latitude, lng: longitude }, uuid);
-    });
-  }, 5000); // 5000ms = 5 seconds
   
   function LocationMarker() {
     const map = useMapEvents({
@@ -68,6 +52,23 @@ const MapPage = () => {
   }, [experiences]);  // The empty array ensures this runs only once, when the component mounts
 
   useEffect(() => {
+
+    const socket = io.connect('https://reactgeolocation-backend.onrender.com'); // Replace with your backend URL
+
+    // Throttle the send-location function to reduce frequency of emissions (e.g., every 5 seconds)
+    const emitLocation = throttle((uuid) => {
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const { latitude, longitude } = pos.coords;
+        setPosition([latitude, longitude]);
+
+        //console.log("user id before: ", uuid);
+
+        // Emit user's position to the backend via WebSocket
+        socket.emit('send-location', { lat: latitude, lng: longitude }, uuid);
+      });
+    }, 5000); // 5000ms = 5 seconds
+
+
     // Request user location and update on the map
     if (navigator.geolocation) {
       let uuid;
@@ -110,7 +111,10 @@ const MapPage = () => {
     // return () => {
     //   socket.off('user-location');
     // };
-  }, [emitLocation]);
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   return (
     <div>
