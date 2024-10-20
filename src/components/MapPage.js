@@ -40,7 +40,7 @@ const MapPage = () => {
 
   useEffect(() => {
     // Fetch the experiences data from the backend API
-    fetch('https://reactgeolocation-backend.onrender.com/api/experiences')
+    fetch(process.env.BACKEND_URL + '/api/experiences')
       .then((response) => response.json())
       .then((data) => {
         setExperiences(data);  // Store the experiences in the state
@@ -52,7 +52,7 @@ const MapPage = () => {
 
   useEffect(() => {
 
-    const socket = io.connect('https://reactgeolocation-backend.onrender.com'); // Replace with your backend URL
+    const socket = io.connect(process.env.BACKEND_URL); // Replace with your backend URL
 
     // Throttle the send-location function to reduce frequency of emissions (e.g., every 5 seconds)
     const emitLocation = throttle((uuid) => {
