@@ -49,7 +49,7 @@ const MapPage = () => {
       .catch((error) => {
         console.error('Error fetching experiences:', error);
       });
-  }, [experiences]);  // The empty array ensures this runs only once, when the component mounts
+  }, []);  // The empty array ensures this runs only once, when the component mounts
 
   useEffect(() => {
 
