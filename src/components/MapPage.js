@@ -39,8 +39,9 @@ const MapPage = () => {
   }
 
   useEffect(() => {
+    const backend_url = process.env.REACT_APP_BACKEND_URL;
     // Fetch the experiences data from the backend API
-    fetch(process.env.BACKEND_URL + '/api/experiences')
+    fetch(`${backend_url}/api/experiences`)
       .then((response) => response.json())
       .then((data) => {
         setExperiences(data);  // Store the experiences in the state
@@ -52,7 +53,7 @@ const MapPage = () => {
 
   useEffect(() => {
 
-    const socket = io.connect(process.env.BACKEND_URL); // Replace with your backend URL
+    const socket = io.connect(process.env.REACT_APP_BACKEND_URL); // Replace with your backend URL
 
     // Throttle the send-location function to reduce frequency of emissions (e.g., every 5 seconds)
     const emitLocation = throttle((uuid) => {
